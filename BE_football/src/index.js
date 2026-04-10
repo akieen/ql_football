@@ -15,6 +15,7 @@ const authRoutes = require("./routes/AuthRoute");
 const branchRoutes = require("./routes/BranchRoute");
 const pitchRoutes = require("./routes/PitchRoute");
 
+
 app.get("/test-db", async (req, res) => {
     try {
         const [rows] = await db.query("SELECT 1");
