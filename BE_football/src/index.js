@@ -14,6 +14,10 @@ app.use("/uploads", express.static(path.join(__dirname, "..", "uploads")));
 const authRoutes = require("./routes/AuthRoute");
 const branchRoutes = require("./routes/BranchRoute");
 const pitchRoutes = require("./routes/PitchRoute");
+const servicesRoutes = require("./routes/ServicesRouter");
+const promotionsRoutes = require("./routes/PromotionsRouter");
+const pitchschedulesRoutes = require("./routes/PitchsChedulesRouter");
+const bookingRoutes = require("./routes/BookingRoute");
 
 
 app.get("/test-db", async (req, res) => {
@@ -27,9 +31,14 @@ app.get("/test-db", async (req, res) => {
 });
 // duong dan API
 app.use("/api/auth", authRoutes);
-app.use("/api/branches",branchRoutes); 
+app.use("/api/branches", branchRoutes);
 app.use("/api/pitches", pitchRoutes);
+app.use("/api/services", servicesRoutes);
+app.use("/api/promotions", promotionsRoutes);
+app.use("/api/pitchschedules", pitchschedulesRoutes);
+app.use("/api/bookings", bookingRoutes);
+
 
 app.listen(3000, () => {
-  console.log("Server running at http://localhost:3000");
+    console.log("Server running at http://localhost:3000");
 });

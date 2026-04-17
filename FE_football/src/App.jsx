@@ -1,138 +1,68 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
-import { testApi } from './src/services/testApi'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast';
+import './index.css';
 
-function App() {
-  const [count, setCount] = useState(0)
- const [data, setData] = useState(null);
-  const handleTestApi = async () => {
-    try {
-      const data = await testApi();
-      setData(data);
+// User pages
+import HomePage from './pages/user/HomePage';
+import BranchesPage from './pages/user/BranchesPage';
+import PitchesPage from './pages/user/PitchesPage';
+import BookingPage from './pages/user/BookingPage';
+import MyBookingsPage from './pages/user/MyBookingsPage';
+import LoginPage from './pages/user/LoginPage';
+import RegisterPage from './pages/user/RegisterPage';
 
-      //console.log(data);
-    } catch (error) {
-      console.error("Error:", error);
-    }
-  };
+// Admin pages
+import AdminDashboard from './pages/admin/AdminDashboard';
+import BranchManage from './pages/admin/BranchManage';
+import PitchManage from './pages/admin/PitchManage';
+import ScheduleManage from './pages/admin/ScheduleManage';
+import ServiceManage from './pages/admin/ServiceManage';
+import PromotionManage from './pages/admin/PromotionManage';
+import BookingManage from './pages/admin/BookingManage';
 
+// Guards
+import ProtectedRoute from './components/ProtectedRoute';
 
+export default function App() {
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <button onClick={handleTestApi}>Gọi API</button>
+    <BrowserRouter>
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          style: {
+            background: 'var(--bg-card)',
+            color: 'var(--text-primary)',
+            border: '1px solid var(--border-strong)',
+            borderRadius: '12px',
+            fontSize: '0.88rem',
+          },
+          success: { iconTheme: { primary: '#16a34a', secondary: '#fff' } },
+        }}
+      />
+      <Routes>
+        {/* Public user routes */}
+        <Route path="/" element={<HomePage />} />
+        <Route path="/branches" element={<BranchesPage />} />
+        <Route path="/pitches" element={<PitchesPage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
 
-      <div>
-        {data && <pre>{JSON.stringify(data, null, 2)}</pre>}
-      </div>
-          <p>
-            Edit <code>src/App.jsx</code> and save to testâăê <code>HMR</code>
-          </p>
-        </div>
-        <button
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+        {/* Protected user routes */}
+        <Route path="/booking/:pitchId" element={<ProtectedRoute><BookingPage /></ProtectedRoute>} />
+        <Route path="/my-bookings" element={<ProtectedRoute><MyBookingsPage /></ProtectedRoute>} />
 
-      <div className="ticks"></div>
+        {/* Admin routes */}
+        <Route path="/admin" element={<ProtectedRoute adminOnly><AdminDashboard /></ProtectedRoute>} />
+        <Route path="/admin/branches" element={<ProtectedRoute adminOnly><BranchManage /></ProtectedRoute>} />
+        <Route path="/admin/pitches" element={<ProtectedRoute adminOnly><PitchManage /></ProtectedRoute>} />
+        <Route path="/admin/schedules" element={<ProtectedRoute adminOnly><ScheduleManage /></ProtectedRoute>} />
+        <Route path="/admin/services" element={<ProtectedRoute adminOnly><ServiceManage /></ProtectedRoute>} />
+        <Route path="/admin/promotions" element={<ProtectedRoute adminOnly><PromotionManage /></ProtectedRoute>} />
+        <Route path="/admin/bookings" element={<ProtectedRoute adminOnly><BookingManage /></ProtectedRoute>} />
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+        {/* Fallback */}
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </BrowserRouter>
+  );
 }
-
-export default App
