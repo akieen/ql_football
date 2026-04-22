@@ -35,7 +35,7 @@ export default function RegisterPage() {
           <div style={{ fontSize: '2.5rem' }}>🏟</div>
           <h2>Tạo tài khoản</h2>
           <p style={{ color: 'var(--text-muted)', fontSize: '0.88rem', marginTop: 4 }}>
-            Tham gia FútbolPro ngay hôm nay
+            Tham gia KSport ngay hôm nay
           </p>
         </div>
 
@@ -79,13 +79,25 @@ export default function RegisterPage() {
             />
           </div>
           <button type="submit" className="btn btn-primary btn-full btn-lg" disabled={loading}>
-            {loading ? '⏳ Đang đăng ký...' : '✅ Đăng ký'}
+            {loading ? '⏳ Đang đăng ký...' : ' Đăng ký'}
           </button>
         </form>
 
         <p className="auth-footer">
           Đã có tài khoản? <Link to="/login" style={{ color: 'var(--primary-light)', fontWeight: 600 }}>Đăng nhập</Link>
         </p>
+        <div style={{ textAlign: 'center', marginTop: 12 }}>
+          <Link to="/" style={{
+            display: 'inline-flex', alignItems: 'center', gap: 6,
+            fontSize: '0.85rem', color: 'var(--text-muted)',
+            textDecoration: 'none', transition: 'var(--transition)'
+          }}
+            onMouseEnter={e => e.currentTarget.style.color = 'var(--primary)'}
+            onMouseLeave={e => e.currentTarget.style.color = 'var(--text-muted)'}
+          >
+            ← Trở về trang chủ
+          </Link>
+        </div>
       </div>
     </div>
   );

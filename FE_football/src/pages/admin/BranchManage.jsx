@@ -85,7 +85,7 @@ export default function BranchManage() {
               <div className="table-wrapper" style={{ border: 'none', borderRadius: 0 }}>
                 <table className="data-table">
                   <thead>
-                    <tr><th>#</th><th>Tên chi nhánh</th><th>Địa chỉ</th><th>Số điện thoại</th><th>Thao tác</th></tr>
+                    <tr><th>#</th><th>Tên chi nhánh</th><th>Địa chỉ</th><th>Số điện thoại</th><th>Người quản lý</th><th>Thao tác</th></tr>
                   </thead>
                   <tbody>
                     {filtered.map((b, i) => (
@@ -94,6 +94,17 @@ export default function BranchManage() {
                         <td><span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{b.name_branch}</span></td>
                         <td>📍 {b.address}</td>
                         <td>📞 {b.phone}</td>
+                        <td>
+                          {b.manager_name ? (
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                              <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>👤 {b.manager_name}</span>
+                              {b.manager_email && <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>✉ {b.manager_email}</span>}
+                              {b.manager_phone && <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>📞 {b.manager_phone}</span>}
+                            </div>
+                          ) : (
+                            <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontStyle: 'italic' }}>Chưa có quản lý</span>
+                          )}
+                        </td>
                         <td>
                           <div style={{ display: 'flex', gap: 6 }}>
                             <button className="btn btn-outline btn-sm" onClick={() => openEdit(b)}>✏ Sửa</button>

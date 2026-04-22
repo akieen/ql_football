@@ -67,6 +67,18 @@ export default function LoginPage() {
         <p className="auth-footer">
           Chưa có tài khoản? <Link to="/register" style={{ color: 'var(--primary-light)', fontWeight: 600 }}>Đăng ký ngay</Link>
         </p>
+        <div style={{ textAlign: 'center', marginTop: 12 }}>
+          <Link to="/" style={{
+            display: 'inline-flex', alignItems: 'center', gap: 6,
+            fontSize: '0.85rem', color: 'var(--text-muted)',
+            textDecoration: 'none', transition: 'var(--transition)'
+          }}
+            onMouseEnter={e => e.currentTarget.style.color = 'var(--primary)'}
+            onMouseLeave={e => e.currentTarget.style.color = 'var(--text-muted)'}
+          >
+            ← Trở về trang chủ
+          </Link>
+        </div>
       </div>
     </div>
   );

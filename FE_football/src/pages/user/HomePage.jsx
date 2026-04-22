@@ -78,27 +78,38 @@ export default function HomePage() {
         {/* Decorative orbs */}
         <div style={{
           position: 'absolute', top: '20%', left: '-100px', width: 400, height: 400,
-          background: 'radial-gradient(circle, rgba(22,163,74,0.08) 0%, transparent 70%)',
+          background: 'radial-gradient(circle, rgba(102,100,161,0.15) 0%, transparent 70%)',
           borderRadius: '50%', pointerEvents: 'none'
         }} />
         <div style={{
           position: 'absolute', bottom: '10%', right: '-80px', width: 300, height: 300,
-          background: 'radial-gradient(circle, rgba(163,230,53,0.06) 0%, transparent 70%)',
+          background: 'radial-gradient(circle, rgba(79,77,141,0.10) 0%, transparent 70%)',
           borderRadius: '50%', pointerEvents: 'none'
         }} />
       </section>
 
       {/* Features */}
-      <section className="section" style={{ background: 'var(--bg-surface)' }}>
+      <section className="section" style={{ background: '#1b2245' }}>
         <div className="container">
-          <h2 className="section-title">Tại sao chọn FútbolPro?</h2>
-          <p className="section-subtitle">Trải nghiệm đặt sân bóng đẳng cấp với công nghệ hiện đại</p>
+          <h2 style={{ textAlign: 'center', marginBottom: 12, color: '#f0f0f6' }}>Tại sao chọn KSport?</h2>
+          <p style={{ textAlign: 'center', marginBottom: 36, color: 'var(--midnight-300)', fontSize: '1rem' }}>Trải nghiệm đặt sân bóng đẳng cấp với công nghệ hiện đại</p>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(240px,1fr))', gap: 24 }}>
             {features.map(f => (
-              <div key={f.title} className="card" style={{ padding: 28, textAlign: 'center' }}>
-                <div style={{ fontSize: '2.5rem', marginBottom: 16 }}>{f.icon}</div>
-                <h4 style={{ marginBottom: 8 }}>{f.title}</h4>
-                <p style={{ fontSize: '0.88rem', color: 'var(--text-muted)' }}>{f.desc}</p>
+              <div key={f.title} style={{
+                padding: 28, textAlign: 'center',
+                background: 'rgba(255,255,255,0.06)',
+                border: '1px solid rgba(255,255,255,0.10)',
+                borderRadius: 'var(--radius-lg)',
+                transition: 'var(--transition)'
+              }}>
+                <div style={{
+                  width: 64, height: 64, borderRadius: 16,
+                  background: 'rgba(102,100,161,0.30)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: '2rem', margin: '0 auto 16px'
+                }}>{f.icon}</div>
+                <h4 style={{ marginBottom: 8, color: '#f0f0f6' }}>{f.title}</h4>
+                <p style={{ fontSize: '0.88rem', color: 'var(--midnight-300)' }}>{f.desc}</p>
               </div>
             ))}
           </div>
@@ -137,15 +148,15 @@ export default function HomePage() {
       </section>
 
       {/* CTA */}
-      <section className="section" style={{ background: 'var(--bg-surface)' }}>
+      <section className="section" style={{ background: '#1b2245' }}>
         <div className="container" style={{ textAlign: 'center' }}>
-          <h2 style={{ marginBottom: 16 }}>Sẵn sàng đặt sân?</h2>
-          <p style={{ color: 'var(--text-muted)', marginBottom: 32, maxWidth: 480, margin: '0 auto 32px' }}>
+          <h2 style={{ marginBottom: 16, color: '#f0f0f6' }}>Sẵn sàng đặt sân?</h2>
+          <p style={{ color: 'var(--midnight-300)', marginBottom: 32, maxWidth: 480, margin: '0 auto 32px' }}>
             Đăng ký miễn phí và bắt đầu đặt sân bóng ngay hôm nay
           </p>
           <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
             <Link to="/register" className="btn btn-primary btn-lg">🚀 Đăng ký miễn phí</Link>
-            <Link to="/pitches" className="btn btn-outline btn-lg">⚽ Xem sân bóng</Link>
+            <Link to="/pitches" className="btn btn-outline btn-lg" style={{ color: '#f0f0f6', borderColor: 'rgba(255,255,255,0.3)' }}>⚽ Xem sân bóng</Link>
           </div>
         </div>
       </section>

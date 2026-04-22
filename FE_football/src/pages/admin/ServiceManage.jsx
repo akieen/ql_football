@@ -23,7 +23,7 @@ export default function ServiceManage() {
     setLoading(true);
     Promise.all([serviceService.getAll(), pitchService.getAll()])
       .then(([s, p]) => { setServices(s.data.data || []); setPitches(p.data.data || []); })
-      .catch(() => {}).finally(() => setLoading(false));
+      .catch(() => { }).finally(() => setLoading(false));
   };
 
   useEffect(() => { load(); }, []);

@@ -25,7 +25,7 @@ export default function AdminSidebar() {
     <aside className="sidebar">
       <div className="sidebar-brand">
         <div className="navbar-brand-icon" style={{ width: 32, height: 32, fontSize: '1rem' }}>⚽</div>
-        <span>FútbolPro Admin</span>
+        <span>KSport Admin</span>
       </div>
 
       <nav className="sidebar-nav">

@@ -31,6 +31,8 @@ export default function BookingPage() {
     promo_code: '',
   });
   const [appliedPromo, setAppliedPromo] = useState(null);
+  const [bookedSlots, setBookedSlots] = useState([]);
+  const [slotsLoading, setSlotsLoading] = useState(false);
 
   useEffect(() => {
     if (!user) { navigate('/login'); return; }
@@ -69,6 +71,17 @@ export default function BookingPage() {
     const promo = promotions.find(p => p.code === form.promo_code && p.is_active);
     if (promo) { setAppliedPromo(promo); toast.success(`Áp dụng mã "${promo.code}" thành công!`); }
     else { toast.error('Mã khuyến mãi không hợp lệ'); setAppliedPromo(null); }
+  };
+
+  const handleDateChange = async (dateVal) => {
+    setForm({ ...form, booking_date: dateVal, start_time: '', end_time: '' });
+    if (!dateVal) { setBookedSlots([]); return; }
+    setSlotsLoading(true);
+    try {
+      const res = await bookingService.getBookedSlots(pitchId, dateVal);
+      setBookedSlots(res.data.data || []);
+    } catch { setBookedSlots([]); }
+    finally { setSlotsLoading(false); }
   };
 
   const handleSubmit = async (e) => {
@@ -150,11 +163,11 @@ export default function BookingPage() {
                     {schedules.map(s => (
                       <div key={s.id} style={{
                         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                        padding: '10px 14px', background: 'var(--bg-surface)', borderRadius: 'var(--radius)',
-                        border: '1px solid var(--border)'
+                        padding: '10px 14px', background: '#1b2245', borderRadius: 'var(--radius)',
+                        border: '1px solid rgba(255,255,255,0.12)'
                       }}>
-                        <span style={{ fontWeight: 600, fontSize: '0.9rem' }}>{DAYS[s.date_of_week]}</span>
-                        <span style={{ color: 'var(--text-muted)', fontSize: '0.88rem' }}>
+                        <span style={{ fontWeight: 600, fontSize: '0.9rem', color: '#fff' }}>{DAYS[s.date_of_week]}</span>
+                        <span style={{ color: 'rgba(255,255,255,0.75)', fontSize: '0.88rem' }}>
                           {s.open_time} - {s.close_time}
                         </span>
                         <span className={`badge ${s.is_active ? 'badge-green' : 'badge-red'}`}>
@@ -176,7 +189,7 @@ export default function BookingPage() {
                   <input type="date" className="form-input"
                     min={new Date().toISOString().split('T')[0]}
                     value={form.booking_date}
-                    onChange={e => setForm({ ...form, booking_date: e.target.value })}
+                    onChange={e => handleDateChange(e.target.value)}
                     required
                   />
                   {sched && (
@@ -187,12 +200,47 @@ export default function BookingPage() {
                   {form.booking_date && !sched && (
                     <span style={{ fontSize: '0.8rem', color: 'var(--danger)' }}>⚠ Ngày này sân không hoạt động</span>
                   )}
+                  {/* Giờ đã đặt */}
+                  {form.booking_date && (
+                    <div style={{ marginTop: 10 }}>
+                      <div style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 6 }}>
+                        🔴 Khung giờ đã đặt
+                      </div>
+                      {slotsLoading ? (
+                        <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>Đang tải...</div>
+                      ) : bookedSlots.length === 0 ? (
+                        <div style={{
+                          fontSize: '0.82rem', color: 'var(--success)',
+                          background: 'rgba(34,197,94,0.08)', border: '1px solid rgba(34,197,94,0.25)',
+                          borderRadius: 8, padding: '6px 10px'
+                        }}>✅ Chưa có lịch đặt nào — Tất cả giờ đều trống!</div>
+                      ) : (
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                          {bookedSlots.map(slot => (
+                            <span key={slot.id} style={{
+                              display: 'inline-flex', alignItems: 'center', gap: 4,
+                              background: slot.status === 'confirmed'
+                                ? 'rgba(205,18,45,0.22)' : 'rgba(234,179,8,0.18)',
+                              border: `1px solid ${slot.status === 'confirmed' ? 'rgba(205,18,45,0.5)' : 'rgba(234,179,8,0.45)'}`,
+                              color: slot.status === 'confirmed' ? '#ff6b7a' : '#fbbf24',
+                              borderRadius: 20, padding: '4px 10px', fontSize: '0.82rem', fontWeight: 600
+                            }}>
+                              🔒 {slot.start_time.slice(0,5)} – {slot.end_time.slice(0,5)}
+                              <span style={{ fontSize: '0.72rem', opacity: 0.8 }}>
+                                ({slot.status === 'confirmed' ? 'Đã xác nhận' : 'Chờ xác nhận'})
+                              </span>
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
                   <div className="form-group">
                     <label className="form-label">Giờ bắt đầu *</label>
-                    <input type="time" className="form-input"
+                    <input lang="en-GB" type="time" className="form-input"
                       value={form.start_time}
                       min={sched?.open_time}
                       onChange={e => setForm({ ...form, start_time: e.target.value })}
@@ -201,7 +249,7 @@ export default function BookingPage() {
                   </div>
                   <div className="form-group">
                     <label className="form-label">Giờ kết thúc *</label>
-                    <input type="time" className="form-input"
+                    <input lang="en-GB" type="time" className="form-input"
                       value={form.end_time}
                       max={sched?.close_time}
                       onChange={e => setForm({ ...form, end_time: e.target.value })}
@@ -234,19 +282,61 @@ export default function BookingPage() {
                   />
                 </div>
 
-                {calcTotal() > 0 && (
-                  <div style={{
-                    background: 'var(--primary-subtle)', border: '1px solid var(--border-strong)',
-                    borderRadius: 'var(--radius)', padding: '14px 16px'
-                  }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <span style={{ color: 'var(--text-muted)' }}>Tổng tiền</span>
-                      <span style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--primary-light)' }}>
-                        {calcTotal().toLocaleString('vi-VN')}đ
-                      </span>
+                {form.booking_date && form.start_time && form.end_time && (() => {
+                  const [sh, sm] = form.start_time.split(':').map(Number);
+                  const [eh, em] = form.end_time.split(':').map(Number);
+                  const totalMins = eh * 60 + em - sh * 60 - sm;
+                  const hours = Math.floor(totalMins / 60);
+                  const mins = totalMins % 60;
+                  const durationLabel = hours > 0
+                    ? (mins > 0 ? `${hours} giờ ${mins} phút` : `${hours} giờ`)
+                    : `${mins} phút`;
+                  const dateObj = new Date(form.booking_date);
+                  const dayNames = ['Chủ nhật','Thứ 2','Thứ 3','Thứ 4','Thứ 5','Thứ 6','Thứ 7'];
+                  const dateLabel = `${dayNames[dateObj.getDay()]}, ${dateObj.toLocaleDateString('vi-VN')}`;
+                  return (
+                    <div style={{
+                      background: 'linear-gradient(135deg,rgba(140,26,23,0.18),rgba(205,18,45,0.10))',
+                      border: '1px solid rgba(205,18,45,0.35)',
+                      borderRadius: 'var(--radius-lg)', padding: '16px 18px',
+                      display: 'flex', flexDirection: 'column', gap: 10
+                    }}>
+                      <div style={{ fontWeight: 700, fontSize: '0.92rem', color: 'var(--primary-light)', marginBottom: 4 }}>
+                        🗒 Tóm tắt đặt sân
+                      </div>
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px 12px' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                          <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>📅 Ngày</span>
+                          <span style={{ fontWeight: 600, fontSize: '0.88rem', color: '#fff' }}>{dateLabel}</span>
+                        </div>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                          <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>⏱ Thời lượng</span>
+                          <span style={{ fontWeight: 600, fontSize: '0.88rem', color: '#fff' }}>{totalMins > 0 ? durationLabel : '—'}</span>
+                        </div>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                          <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>🕐 Giờ bắt đầu</span>
+                          <span style={{ fontWeight: 700, fontSize: '1rem', color: 'var(--primary-light)' }}>{form.start_time}</span>
+                        </div>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                          <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>🕐 Giờ kết thúc</span>
+                          <span style={{ fontWeight: 700, fontSize: '1rem', color: 'var(--primary-light)' }}>{form.end_time}</span>
+                        </div>
+                      </div>
+                      {totalMins > 0 && (
+                        <div style={{
+                          marginTop: 4, paddingTop: 12,
+                          borderTop: '1px solid rgba(255,255,255,0.1)',
+                          display: 'flex', justifyContent: 'space-between', alignItems: 'center'
+                        }}>
+                          <span style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>Tổng tiền</span>
+                          <span style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--primary-light)' }}>
+                            {calcTotal().toLocaleString('vi-VN')}đ
+                          </span>
+                        </div>
+                      )}
                     </div>
-                  </div>
-                )}
+                  );
+                })()}
 
                 <button type="submit" className="btn btn-primary btn-full btn-lg" disabled={submitting}>
                   {submitting ? '⏳ Đang đặt...' : '🏟 Xác nhận đặt sân'}

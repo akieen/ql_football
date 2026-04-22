@@ -2,7 +2,12 @@ const db = require("../../config/db");
 
 const getAllBranches = async (req, res) => {
     try {
-        const [branches] = await db.execute("SELECT * FROM branches");
+        const [branches] = await db.execute(
+            `SELECT b.*, u.full_name AS manager_name, u.email AS manager_email, u.phone AS manager_phone
+             FROM branches b
+             LEFT JOIN users u ON b.user_id = u.id
+             ORDER BY b.id ASC`
+        );
         res.status(200).json({
             status: 200,
             message: "Lấy danh sách chi nhánh thành công",

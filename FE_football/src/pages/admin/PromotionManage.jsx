@@ -4,7 +4,7 @@ import Modal from '../../components/Modal';
 import { promotionService } from '../../services/promotionService';
 import toast from 'react-hot-toast';
 
-const EMPTY = { code: '', description: '', discount_type: 'percent', discount_value: '', max_discount_amount: '', min_booking_amount: '', start_at: '', expires_at: '', usage_limit: '', is_active: 1 };
+const EMPTY = { code: '', description: '', discount_type: 'percentage', discount_value: '', max_discount_amount: '', min_booking_amount: '', start_at: '', expires_at: '', usage_limit: '', is_active: 1 };
 
 export default function PromotionManage() {
   const [promotions, setPromotions] = useState([]);
@@ -79,9 +79,9 @@ export default function PromotionManage() {
                           <td>
                             <span style={{ fontFamily: 'monospace', fontWeight: 700, color: 'var(--accent)', fontSize: '0.95rem', background: 'var(--primary-subtle)', padding: '3px 8px', borderRadius: 6 }}>{p.code}</span>
                           </td>
-                          <td>{p.discount_type === 'percent' ? 'Phần trăm' : 'Số tiền cố định'}</td>
+                          <td>{p.discount_type === 'percentage' ? 'Phần trăm' : 'Số tiền cố định'}</td>
                           <td style={{ color: 'var(--primary-light)', fontWeight: 700 }}>
-                            {p.discount_type === 'percent' ? `${p.discount_value}%` : `${Number(p.discount_value).toLocaleString('vi-VN')}đ`}
+                            {p.discount_type === 'percentage' ? `${p.discount_value}%` : `${Number(p.discount_value).toLocaleString('vi-VN')}đ`}
                           </td>
                           <td style={{ fontSize: '0.82rem' }}>{p.expires_at ? new Date(p.expires_at).toLocaleDateString('vi-VN') : '—'}</td>
                           <td>{p.usage_count || 0}{p.usage_limit ? `/${p.usage_limit}` : ''}</td>
@@ -119,13 +119,13 @@ export default function PromotionManage() {
           <div className="form-group">
             <label className="form-label">Loại giảm giá *</label>
             <select className="form-input" value={form.discount_type} onChange={e => setForm({ ...form, discount_type: e.target.value })}>
-              <option value="percent">Phần trăm (%)</option>
+              <option value="percentage">Phần trăm (%)</option>
               <option value="fixed">Số tiền cố định (đ)</option>
             </select>
           </div>
           <div className="form-group">
             <label className="form-label">Giá trị giảm *</label>
-            <input type="number" className="form-input" placeholder={form.discount_type === 'percent' ? '20' : '50000'} value={form.discount_value} onChange={e => setForm({ ...form, discount_value: e.target.value })} />
+            <input type="number" className="form-input" placeholder={form.discount_type === 'percentage' ? '20' : '50000'} value={form.discount_value} onChange={e => setForm({ ...form, discount_value: e.target.value })} />
           </div>
           <div className="form-group">
             <label className="form-label">Giảm tối đa (đ)</label>

@@ -18,6 +18,29 @@ const getAllBookings = async (req, res) => {
     }
 };
 
+const getBookedSlotsByPitch = async (req, res) => {
+    try {
+        const { pitch_id } = req.params;
+        const { date } = req.query;
+        if (!date) {
+            return res.status(400).json({ status: 400, message: "Thiếu tham số date", data: null });
+        }
+        const [slots] = await db.execute(
+            `SELECT id, start_time, end_time, status
+             FROM bookings
+             WHERE pitch_id = ?
+               AND booking_date = ?
+               AND status IN ('pending', 'confirmed')
+             ORDER BY start_time ASC`,
+            [pitch_id, date]
+        );
+        res.status(200).json({ status: 200, message: "Lấy giờ đã đặt thành công", data: slots });
+    } catch (error) {
+        res.status(500).json({ status: 500, message: error.message, data: null });
+    }
+};
+
+
 const getUserBookings = async (req, res) => {
     try {
         const { user_id } = req.params;
@@ -38,14 +61,34 @@ const getUserBookings = async (req, res) => {
 
 const createBooking = async (req, res) => {
     try {
-        const { user_id, pitch_id, booking_date, start_time, end_time, total_price, promotion_id, notes } = req.body;
+        const { user_id, pitch_id, booking_date, start_time, end_time, total_price, promotion_id } = req.body;
         if (!user_id || !pitch_id || !booking_date || !start_time || !end_time || !total_price) {
             return res.status(400).json({ status: 400, message: "Thiếu thông tin bắt buộc", data: null });
         }
+
+        // ── Kiểm tra trùng lịch ──────────────────────────────────────────
+        const [conflicts] = await db.execute(
+            `SELECT id FROM bookings
+             WHERE pitch_id = ?
+               AND booking_date = ?
+               AND status IN ('pending', 'confirmed')
+               AND start_time < ?
+               AND end_time   > ?`,
+            [pitch_id, booking_date, end_time, start_time]
+        );
+        if (conflicts.length > 0) {
+            return res.status(409).json({
+                status: 409,
+                message: "Khung giờ này đã được đặt. Vui lòng chọn giờ khác.",
+                data: null
+            });
+        }
+        // ────────────────────────────────────────────────────────────────
+
         const [result] = await db.execute(
-            `INSERT INTO bookings (user_id, pitch_id, booking_date, start_time, end_time, total_price, promotion_id, notes, status, createdAt, updatedAt)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'pending', NOW(), NOW())`,
-            [user_id, pitch_id, booking_date, start_time, end_time, total_price, promotion_id || null, notes || null]
+            `INSERT INTO bookings (user_id, pitch_id, booking_date, start_time, end_time, total_price, promotion_id, status, createdAt, updatedAt)
+             VALUES (?, ?, ?, ?, ?, ?, ?, 'pending', NOW(), NOW())`,
+            [user_id, pitch_id, booking_date, start_time, end_time, total_price, promotion_id || null]
         );
         res.status(201).json({
             status: 201,
@@ -84,4 +127,5 @@ const deleteBooking = async (req, res) => {
     }
 };
 
-module.exports = { getAllBookings, getUserBookings, createBooking, updateBookingStatus, deleteBooking };
+module.exports = { getAllBookings, getBookedSlotsByPitch, getUserBookings, createBooking, updateBookingStatus, deleteBooking };
+

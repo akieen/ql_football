@@ -67,10 +67,47 @@ export default function MyBookingsPage() {
                           <h4>{b.pitch_name || 'Sân bóng'}</h4>
                           <span className={`badge ${st.cls}`}>{st.label}</span>
                         </div>
+                        {/* Thời gian đặt - nổi bật */}
+                        {b.booking_date && b.start_time && b.end_time && (() => {
+                          const dateObj = new Date(b.booking_date);
+                          const dayNames = ['Chủ nhật','Thứ 2','Thứ 3','Thứ 4','Thứ 5','Thứ 6','Thứ 7'];
+                          const dateLabel = `${dayNames[dateObj.getDay()]}, ${dateObj.toLocaleDateString('vi-VN')}`;
+                          const [sh, sm] = b.start_time.split(':').map(Number);
+                          const [eh, em] = b.end_time.split(':').map(Number);
+                          const totalMins = eh * 60 + em - sh * 60 - sm;
+                          const hrs = Math.floor(totalMins / 60);
+                          const mns = totalMins % 60;
+                          const dur = hrs > 0 ? (mns > 0 ? `${hrs}h${mns}p` : `${hrs} giờ`) : `${mns} phút`;
+                          return (
+                            <div style={{
+                              display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 12,
+                              padding: '10px 14px',
+                              background: 'linear-gradient(135deg,rgba(140,26,23,0.2),rgba(205,18,45,0.1))',
+                              border: '1px solid rgba(205,18,45,0.3)',
+                              borderRadius: 'var(--radius)',
+                            }}>
+                              <span style={{
+                                display: 'flex', alignItems: 'center', gap: 5,
+                                background: 'rgba(255,255,255,0.08)', borderRadius: 20,
+                                padding: '3px 10px', fontSize: '0.82rem', color: '#fff', fontWeight: 500
+                              }}>📅 {dateLabel}</span>
+                              <span style={{
+                                display: 'flex', alignItems: 'center', gap: 5,
+                                background: 'rgba(205,18,45,0.25)', borderRadius: 20,
+                                padding: '3px 10px', fontSize: '0.9rem', color: 'var(--primary-light)', fontWeight: 700
+                              }}>🕐 {b.start_time} – {b.end_time}</span>
+                              {totalMins > 0 && (
+                                <span style={{
+                                  display: 'flex', alignItems: 'center', gap: 5,
+                                  background: 'rgba(255,255,255,0.06)', borderRadius: 20,
+                                  padding: '3px 10px', fontSize: '0.82rem', color: 'var(--text-muted)', fontWeight: 500
+                                }}>⏱ {dur}</span>
+                              )}
+                            </div>
+                          );
+                        })()}
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(180px,1fr))', gap: '6px 20px' }}>
                           <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>🏢 {b.name_branch}</span>
-                          <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>📅 {b.booking_date}</span>
-                          <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>⏰ {b.start_time} - {b.end_time}</span>
                           <span style={{ fontSize: '0.85rem', color: 'var(--primary-light)', fontWeight: 700 }}>
                             💰 {Number(b.total_price).toLocaleString('vi-VN')}đ
                           </span>
