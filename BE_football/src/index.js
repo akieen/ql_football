@@ -5,7 +5,14 @@ const db = require("./config/db");
 const app = express();
 // CORS middleware  
 const cors = require("cors");
-app.use(cors());
+const allowedOrigins = [
+    "http://localhost:5173",
+    process.env.FRONTEND_URL,
+].filter(Boolean);
+app.use(cors({
+    origin: allowedOrigins,
+    credentials: true,
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use("/uploads", express.static(path.join(__dirname, "..", "uploads")));
@@ -39,6 +46,7 @@ app.use("/api/pitchschedules", pitchschedulesRoutes);
 app.use("/api/bookings", bookingRoutes);
 
 
-app.listen(3000, () => {
-    console.log("Server running at http://localhost:3000");
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`Server running at http://localhost:${PORT}`);
 });
